@@ -1,0 +1,52 @@
+#!/usr/bin/env ruby
+
+require 'net/http'
+require 'zip/zipfilesystem'
+require 'digest/md5'
+
+# http://www.ars.usda.gov/SP2UserFiles/Place/12354500/Data/SR25/dnload/sr25.zip
+$domain="www.ars.usda.gov"
+$filename="sr25.zip"
+$path="/SP2UserFiles/Place/12354500/Data/SR25/dnload/#{$filename}"
+$uri = "#{$domain}#{$url}"
+
+Net::HTTP.start($domain) do |http|
+	f = open($filename, "w")
+	begin
+    	http.request_get($path) do |resp|
+        	resp.read_body do |segment|
+            	f.write(segment)
+        	end
+    	end
+	ensure
+    	f.close()
+	end
+end
+puts "Download #{$filename} complete."
+
+changes = []
+
+Zip::ZipFile.open($filename) do |zipfile|
+  zipfile.each do |file|
+  	curr_file = "./sr25/#{file}"
+  	if ! File.exists? curr_file
+  		changes << "There is a new file '#{file}'."
+  		next
+  	end
+
+  	zip_digest = Digest::MD5.hexdigest(zipfile.read(file))
+  	curr_digest = Digest::MD5.hexdigest(File.read(curr_file))
+  	if zip_digest != curr_digest
+  		changes << "The file '#{file}' has been updated."
+  	end
+  end
+end
+
+if changes.length > 0
+	changes.each do |change|
+		puts change
+	end
+else
+	puts "There were no changes since last update."
+	FileUtils.remove($filename)
+end 
