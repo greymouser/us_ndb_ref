@@ -4,10 +4,11 @@ require 'net/http'
 require 'zip/zipfilesystem'
 require 'digest/md5'
 
-# http://www.ars.usda.gov/SP2UserFiles/Place/12354500/Data/SR25/dnload/sr25.zip
+# https://www.ars.usda.gov/SP2UserFiles/Place/12354500/Data/SR26/dnload/sr26.zip
+# http://www.ars.usda.gov/SP2UserFiles/Place/12354500/Data/SR25/dnload/sr26.zip
 $domain="www.ars.usda.gov"
-$filename="sr25.zip"
-$path="/SP2UserFiles/Place/12354500/Data/SR25/dnload/#{$filename}"
+$filename="sr26.zip"
+$path="/SP2UserFiles/Place/12354500/Data/SR26/dnload/#{$filename}"
 $uri = "#{$domain}#{$url}"
 
 Net::HTTP.start($domain) do |http|
@@ -28,7 +29,7 @@ changes = []
 
 Zip::ZipFile.open($filename) do |zipfile|
   zipfile.each do |file|
-  	curr_file = "./sr25/#{file}"
+  	curr_file = "./sr26/#{file}"
   	if ! File.exists? curr_file
   		changes << "There is a new file '#{file}'."
   		next
